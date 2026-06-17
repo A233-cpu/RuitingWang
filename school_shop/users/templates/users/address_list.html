@@ -1,0 +1,301 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+  .address-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 15px;
+  }
+  
+  .address-header {
+    text-align: center;
+    margin-bottom: 40px;
+    position: relative;
+  }
+  
+  .address-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 10px;
+    position: relative;
+    display: inline-block;
+  }
+  
+  .address-title::after {
+    content: "";
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(to right, #3f51b5, #6610f2);
+    border-radius: 2px;
+  }
+  
+  .address-subtitle {
+    color: #777;
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 15px auto 0;
+  }
+  
+  .address-card {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    overflow: hidden;
+    padding: 0;
+    transition: all 0.3s ease;
+    margin-bottom: 30px;
+  }
+  
+  .address-content {
+    padding: 30px;
+  }
+  
+  .address-add-btn {
+    background: linear-gradient(to right, #3f51b5, #6610f2);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 25px;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(63, 81, 181, 0.2);
+    text-decoration: none;
+  }
+  
+  .address-add-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(63, 81, 181, 0.3);
+    color: white;
+  }
+  
+  .address-add-btn i {
+    margin-right: 8px;
+    font-size: 1rem;
+  }
+  
+  .address-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+  }
+  
+  .address-item {
+    background: #ffffff;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    border: 1px solid #f0f0f0;
+    position: relative;
+  }
+  
+  .address-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  }
+  
+  .address-item-content {
+    padding: 20px 25px;
+    position: relative;
+  }
+  
+  .address-item-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    justify-content: space-between;
+  }
+  
+  .address-user {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #333;
+  }
+  
+  .address-phone {
+    color: #777;
+    font-size: 0.95rem;
+  }
+  
+  .address-detail {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 10px;
+    color: #444;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 15px;
+    min-height: 70px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .address-detail i {
+    margin-right: 10px;
+    color: #3f51b5;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+  
+  .address-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  
+  .btn-edit, .btn-delete {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.2s ease;
+    text-decoration: none;
+  }
+  
+  .btn-edit {
+    background-color: #fff;
+    color: #ff9800;
+    border: 1px solid #ff9800;
+  }
+  
+  .btn-edit:hover {
+    background-color: #ff9800;
+    color: white;
+  }
+  
+  .btn-delete {
+    background-color: #fff;
+    color: #f44336;
+    border: 1px solid #f44336;
+  }
+  
+  .btn-delete:hover {
+    background-color: #f44336;
+    color: white;
+  }
+  
+  .btn-edit i, .btn-delete i {
+    margin-right: 5px;
+  }
+  
+  .no-address {
+    background: #f9f9f9;
+    border-radius: 15px;
+    padding: 40px;
+    text-align: center;
+    margin: 20px 0;
+  }
+  
+  .no-address i {
+    font-size: 3rem;
+    color: #ccc;
+    margin-bottom: 15px;
+    display: block;
+  }
+  
+  .no-address-text {
+    color: #777;
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+  }
+  
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    color: #3f51b5;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    margin-top: 10px;
+  }
+  
+  .back-link:hover {
+    transform: translateX(-5px);
+    color: #6610f2;
+  }
+  
+  .back-link i {
+    margin-right: 8px;
+  }
+  
+  @media (max-width: 768px) {
+    .address-items {
+      grid-template-columns: 1fr;
+    }
+    
+    .address-title {
+      font-size: 1.8rem;
+    }
+    
+    .address-content {
+      padding: 20px;
+    }
+  }
+</style>
+
+<div class="address-container">
+  <div class="address-header">
+    <h1 class="address-title">收货地址管理</h1>
+    <p class="address-subtitle">在这里管理你的收货地址，方便下单时选择</p>
+  </div>
+  
+  <div class="address-card">
+    <div class="address-content">
+      <a href="{% url 'users:address_add' %}" class="address-add-btn">
+        <i class="fas fa-plus"></i> 新增地址
+      </a>
+      
+      {% if addresses %}
+        <div class="address-items">
+          {% for address in addresses %}
+            <div class="address-item">
+              <div class="address-item-content">
+                <div class="address-item-header">
+                  <div class="address-user">{{ address.receiver }}</div>
+                  <div class="address-phone">{{ address.phone }}</div>
+                </div>
+                <div class="address-detail">
+                  <i class="fas fa-map-marker-alt"></i>
+                  <div>{{ address.detail }}</div>
+                </div>
+                <div class="address-actions">
+                  <a href="{% url 'users:address_edit' address.pk %}" class="btn-edit">
+                    <i class="fas fa-edit"></i> 编辑
+                  </a>
+                  <a href="{% url 'users:address_delete' address.pk %}" class="btn-delete">
+                    <i class="fas fa-trash"></i> 删除
+                  </a>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="no-address">
+          <i class="fas fa-map-marked-alt"></i>
+          <p class="no-address-text">暂无收货地址，请添加新地址</p>
+          <a href="{% url 'users:address_add' %}" class="address-add-btn">
+            <i class="fas fa-plus"></i> 添加第一个地址
+          </a>
+        </div>
+      {% endif %}
+      
+      <div class="text-center mt-4">
+        <a href="{% url 'users:profile' %}" class="back-link">
+          <i class="fas fa-arrow-left"></i> 返回个人中心
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,757 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+  .product-form-container {
+    max-width: 800px;
+    margin: 48px auto;
+    padding: 0 12px;
+  }
+  
+  .product-form-card {
+    background: rgba(255,255,255,0.97);
+    border-radius: 24px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.1);
+    padding: 48px 40px 40px;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .product-form-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(to right, #3f51b5, #6610f2);
+  }
+  
+  .product-form-header {
+    text-align: center;
+    margin-bottom: 36px;
+    position: relative;
+  }
+  
+  .product-form-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 12px;
+    position: relative;
+    display: inline-block;
+  }
+  
+  .product-form-title::after {
+    content: "";
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(to right, #3f51b5, #6610f2);
+    border-radius: 3px;
+  }
+  
+  .product-form-subtitle {
+    color: #666;
+    font-size: 1.1rem;
+    margin-top: 16px;
+  }
+  
+  .form-group {
+    margin-bottom: 24px;
+  }
+  
+  .form-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #444;
+    font-size: 1.05rem;
+  }
+  
+  .form-control {
+    width: 100%;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    padding: 12px 16px;
+    font-size: 1.05rem;
+    transition: all 0.3s ease;
+  }
+  
+  .form-control:focus {
+    border-color: #3f51b5;
+    box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.15);
+    outline: none;
+  }
+  
+  .form-text {
+    display: block;
+    margin-top: 6px;
+    color: #666;
+    font-size: 0.9rem;
+  }
+  
+  textarea.form-control {
+    min-height: 120px;
+    resize: vertical;
+  }
+  
+  .image-upload-container {
+    margin-bottom: 24px;
+  }
+  
+  .main-image-container {
+    margin-bottom: 16px;
+  }
+  
+  .image-preview-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  
+  .image-preview-wrapper {
+    position: relative;
+    width: 100px;
+    height: 100px;
+  }
+  
+  .image-preview {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 2px solid #eee;
+    transition: all 0.2s ease;
+  }
+  
+  .image-preview-wrapper:hover .image-preview {
+    border-color: #3f51b5;
+  }
+  
+  .image-delete-btn {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #f44336;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    cursor: pointer;
+    z-index: 10;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: all 0.2s ease;
+    opacity: 0.9;
+    border: none;
+  }
+  
+  .image-delete-btn:hover {
+    opacity: 1;
+    transform: scale(1.1);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+  }
+  
+  .preview-placeholder {
+    width: 100px;
+    height: 100px;
+    border-radius: 8px;
+    background: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #aaa;
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 8px;
+  }
+  
+  .form-actions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 32px;
+  }
+  
+  .btn-submit {
+    padding: 12px 24px;
+    font-size: 1.05rem;
+    font-weight: 500;
+    border-radius: 10px;
+    background: #4caf50;
+    border: none;
+    color: white;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+    transition: all 0.3s ease;
+  }
+  
+  .btn-submit:hover {
+    background: #43a047;
+    box-shadow: 0 6px 16px rgba(76, 175, 80, 0.3);
+    transform: translateY(-2px);
+  }
+  
+  .btn-cancel {
+    padding: 12px 24px;
+    font-size: 1.05rem;
+    font-weight: 500;
+    border-radius: 10px;
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    color: #333;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-cancel:hover {
+    background: #f1f3f5;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+  }
+  
+  .custom-file-input {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+  }
+  
+  .custom-file-input input[type="file"] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    z-index: 2;
+  }
+  
+  .custom-file-label {
+    display: block;
+    background: #f8f9fa;
+    border: 1px dashed #ccc;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    color: #666;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .custom-file-input:hover .custom-file-label {
+    border-color: #3f51b5;
+    background: rgba(63, 81, 181, 0.05);
+  }
+  
+  .custom-file-icon {
+    font-size: 1.8rem;
+    display: block;
+    margin-bottom: 8px;
+    color: #3f51b5;
+  }
+  
+  /* 隐藏上传按钮区域 */
+  .custom-file-input.hidden {
+    display: none;
+  }
+  
+  /* 类别选择样式 */
+  .category-selection .form-control {
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 1.05rem;
+    transition: all 0.3s ease;
+  }
+  
+  .category-selection .form-control:focus {
+    border-color: #3f51b5;
+    box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.15);
+  }
+  
+  .category-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 8px;
+  }
+  
+  .category-card {
+    flex: 1 0 100px;
+    max-width: 140px;
+    padding: 12px 8px;
+    border-radius: 10px;
+    background: #f8f9fa;
+    border: 2px solid #eee;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .category-card:hover {
+    border-color: #3f51b5;
+    background: rgba(63, 81, 181, 0.05);
+  }
+  
+  .category-card.active {
+    border-color: #3f51b5;
+    background: rgba(63, 81, 181, 0.08);
+  }
+  
+  .category-card i {
+    font-size: 1.8rem;
+    margin-bottom: 6px;
+    color: #555;
+    display: block;
+  }
+  
+  .category-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+  
+  .add-image-btn {
+    width: 100px;
+    height: 100px;
+    border-radius: 8px;
+    background: #f8f9fa;
+    border: 2px dashed #ccc;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #3f51b5;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .add-image-btn:hover {
+    background: rgba(63, 81, 181, 0.05);
+    border-color: #3f51b5;
+    transform: scale(1.05);
+  }
+  
+  .add-image-btn i {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+  }
+  
+  .add-image-btn span {
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-align: center;
+  }
+  
+  @media (max-width: 768px) {
+    .product-form-card {
+      padding: 32px 24px 28px;
+      border-radius: 20px;
+    }
+    
+    .product-form-title {
+      font-size: 1.8rem;
+    }
+    
+    .form-actions {
+      flex-direction: column;
+    }
+    
+    .btn-submit, .btn-cancel {
+      width: 100%;
+    }
+  }
+</style>
+
+<div class="product-form-container">
+  <div class="product-form-card">
+    <div class="product-form-header">
+      <h1 class="product-form-title">发布闲置物品</h1>
+      <p class="product-form-subtitle">分享你的闲置物品，让它们找到新的主人</p>
+    </div>
+    
+    <!-- 添加表单错误消息显示区域 -->
+    {% if form.errors %}
+    <div class="alert alert-danger mb-4">
+      <strong>表单提交有误，请修正以下问题:</strong>
+      <ul class="mb-0 mt-2">
+        {% for field, errors in form.errors.items %}
+          {% for error in errors %}
+            <li>{{ field }}: {{ error }}</li>
+          {% endfor %}
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+    
+    <!-- 显示Django消息 -->
+    {% if messages %}
+    <div class="messages mb-4">
+      {% for message in messages %}
+      <div class="alert 
+        {% if message.tags == 'success' %}alert-success
+        {% elif message.tags == 'error' %}alert-danger
+        {% elif message.tags == 'info' %}alert-info
+        {% elif message.tags == 'warning' %}alert-warning
+        {% else %}alert-secondary{% endif %}">
+        {{ message }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    
+    <form method="post" enctype="multipart/form-data" id="productForm">
+      {% csrf_token %}
+      
+      <div class="form-group">
+        <label for="id_name" class="form-label">商品名称</label>
+        {{ form.name }}
+        <small class="form-text">请输入简洁明了的商品名称</small>
+      </div>
+      
+      <div class="form-group">
+        <label for="id_category" class="form-label">商品类别</label>
+        <div class="category-selection">
+          {{ form.category }}
+          <div class="category-cards">
+            <div class="category-card" data-value="books">
+              <i class="fas fa-book"></i>
+              <div class="category-name">教材书籍</div>
+            </div>
+            <div class="category-card" data-value="digital">
+              <i class="fas fa-laptop"></i>
+              <div class="category-name">数码产品</div>
+            </div>
+            <div class="category-card" data-value="clothes">
+              <i class="fas fa-tshirt"></i>
+              <div class="category-name">服装鞋包</div>
+            </div>
+            <div class="category-card" data-value="daily">
+              <i class="fas fa-home"></i>
+              <div class="category-name">日常用品</div>
+            </div>
+            <div class="category-card" data-value="sports">
+              <i class="fas fa-running"></i>
+              <div class="category-name">运动健身</div>
+            </div>
+            <div class="category-card" data-value="others">
+              <i class="fas fa-ellipsis-h"></i>
+              <div class="category-name">其他分类</div>
+            </div>
+          </div>
+        </div>
+        <small class="form-text">选择最符合你商品的类别，便于买家快速找到</small>
+      </div>
+      
+      <div class="form-group">
+        <label for="id_price" class="form-label">价格（元）</label>
+        {{ form.price }}
+        <small class="form-text">请输入合理的价格</small>
+      </div>
+      
+      <div class="form-group">
+        <label for="id_description" class="form-label">商品描述</label>
+        {{ form.description }}
+        <small class="form-text">详细描述商品的使用情况、新旧程度、使用年限等信息</small>
+      </div>
+      
+      <div class="image-upload-container">
+        <div class="main-image-container">
+          <label class="form-label">商品主图</label>
+          <div class="custom-file-input" id="mainImageUpload" style="display:none;">
+            {{ form.image }}
+          </div>
+          <small class="form-text mb-2">商品主图将作为列表中展示的主要图片</small>
+          <div class="image-preview-container" id="mainImagePreview">
+            <!-- 主图添加按钮将通过JS添加 -->
+          </div>
+        </div>
+        
+        <div class="extra-images-container mt-4">
+          <label class="form-label">更多商品图片</label>
+          <div class="custom-file-input" id="extraImagesUpload" style="display:none;">
+            <input type="file" name="extra_images" id="id_extra_images" multiple accept="image/*" class="form-control">
+          </div>
+          <small class="form-text mb-2">最多可上传8张额外图片展示商品细节</small>
+          <div class="image-preview-container" id="extraImagesPreview">
+            <!-- 用于显示已上传图片和添加按钮 -->
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-actions">
+        <button type="submit" class="btn-submit">
+          <i class="fas fa-paper-plane me-2"></i>发布商品
+        </button>
+        <a href="{% url 'users:my_products' %}" class="btn-cancel">
+          <i class="fas fa-times me-2"></i>取消
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // 主图预览和删除功能
+    const mainImageInput = document.getElementById('id_image');
+    const mainImagePreview = document.getElementById('mainImagePreview');
+    const mainImageUpload = document.getElementById('mainImageUpload');
+    let mainImageUploaded = false;
+    
+    // 初始化时添加主图上传按钮
+    addMainImageUploadButton();
+    
+    // 添加主图上传按钮
+    function addMainImageUploadButton() {
+      if (!mainImageUploaded) {
+        mainImagePreview.innerHTML = '';
+        
+        const addButton = document.createElement('div');
+        addButton.className = 'add-image-btn';
+        addButton.innerHTML = '<i class="fas fa-plus"></i><span>添加主图</span>';
+        addButton.addEventListener('click', function() {
+          mainImageInput.click();
+        });
+        mainImagePreview.appendChild(addButton);
+      }
+    }
+    
+    // 主图上传
+    mainImageInput.addEventListener('change', function() {
+      if (this.files && this.files[0]) {
+        mainImagePreview.innerHTML = '';
+        
+        const imageWrapper = document.createElement('div');
+        imageWrapper.className = 'image-preview-wrapper';
+        
+        const img = document.createElement('img');
+        img.className = 'image-preview';
+        img.src = URL.createObjectURL(this.files[0]);
+        imageWrapper.appendChild(img);
+        
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'image-delete-btn';
+        deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
+        deleteBtn.type = 'button';
+        deleteBtn.addEventListener('click', deleteMainImage);
+        imageWrapper.appendChild(deleteBtn);
+        
+        mainImagePreview.appendChild(imageWrapper);
+        mainImageUploaded = true;
+      } else {
+        mainImageUploaded = false;
+        addMainImageUploadButton();
+      }
+    });
+    
+    // 删除主图
+    function deleteMainImage(e) {
+      e.stopPropagation();
+      
+      // 重置文件输入框
+      mainImageInput.value = '';
+      
+      // 重置状态并添加上传按钮
+      mainImageUploaded = false;
+      addMainImageUploadButton();
+    }
+    
+    // 类别选择交互
+    const categorySelect = document.getElementById('id_category');
+    const categoryCards = document.querySelectorAll('.category-card');
+    
+    // 初始化选中状态
+    function updateActiveCard() {
+      const selectedValue = categorySelect.value;
+      categoryCards.forEach(card => {
+        if (card.getAttribute('data-value') === selectedValue) {
+          card.classList.add('active');
+        } else {
+          card.classList.remove('active');
+        }
+      });
+    }
+    
+    // 初始化时执行一次
+    updateActiveCard();
+    
+    // 点击卡片更新下拉选择框
+    categoryCards.forEach(card => {
+      card.addEventListener('click', function() {
+        const value = this.getAttribute('data-value');
+        categorySelect.value = value;
+        updateActiveCard();
+      });
+    });
+    
+    // 当下拉框改变时更新卡片状态
+    categorySelect.addEventListener('change', updateActiveCard);
+    
+    // 额外图片预览和删除功能
+    const extraImagesInput = document.getElementById('id_extra_images');
+    const extraImagesPreview = document.getElementById('extraImagesPreview');
+    const extraImagesUpload = document.getElementById('extraImagesUpload');
+    let extraImagesArray = []; // 存储已上传的图片
+    
+    // 初始化时添加上传按钮
+    addExtraImagesUploadButton();
+    
+    // 添加图片按钮
+    function addExtraImagesUploadButton() {
+      if (extraImagesArray.length < 8) {
+        const addButton = document.createElement('div');
+        addButton.className = 'add-image-btn';
+        addButton.innerHTML = '<i class="fas fa-plus"></i><span>添加图片</span>';
+        addButton.addEventListener('click', function() {
+          extraImagesInput.click();
+        });
+        extraImagesPreview.appendChild(addButton);
+      }
+    }
+    
+    // 更新预览区域
+    function updateExtraImagesPreview() {
+      // 清空预览区
+      extraImagesPreview.innerHTML = '';
+      
+      // 添加图片预览
+      extraImagesArray.forEach((file, index) => {
+        const imageWrapper = document.createElement('div');
+        imageWrapper.className = 'image-preview-wrapper';
+        imageWrapper.dataset.index = index;
+        
+        const img = document.createElement('img');
+        img.className = 'image-preview';
+        img.src = URL.createObjectURL(file);
+        imageWrapper.appendChild(img);
+        
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'image-delete-btn';
+        deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
+        deleteBtn.type = 'button';
+        deleteBtn.addEventListener('click', function(e) {
+          deleteExtraImage(e, index);
+        });
+        imageWrapper.appendChild(deleteBtn);
+        
+        extraImagesPreview.appendChild(imageWrapper);
+      });
+      
+      // 添加上传按钮（如果图片数量小于8）
+      addExtraImagesUploadButton();
+      
+      // 创建要提交的文件列表
+      createExtraImagesFileList();
+    }
+    
+    // 额外图片上传
+    extraImagesInput.addEventListener('change', function() {
+      if (this.files && this.files.length > 0) {
+        // 获取新上传的文件
+        const newFiles = Array.from(this.files);
+        
+        // 添加新文件到数组中，但要限制总数为8张
+        const availableSlots = 8 - extraImagesArray.length;
+        const filesToAdd = newFiles.slice(0, availableSlots);
+        
+        // 合并文件数组
+        extraImagesArray = extraImagesArray.concat(filesToAdd);
+        
+        // 更新预览
+        updateExtraImagesPreview();
+        
+        // 如果选择了超过可用槽位的图片，显示提示
+        if (newFiles.length > availableSlots) {
+          const notice = document.createElement('div');
+          notice.className = 'preview-placeholder';
+          notice.style.background = '#fff3cd';
+          notice.style.color = '#856404';
+          notice.style.marginLeft = 'auto';
+          notice.style.marginRight = 'auto';
+          notice.style.marginTop = '10px';
+          notice.innerHTML = `<i class="fas fa-exclamation-circle"></i><br>只能上传共8张图片`;
+          extraImagesPreview.appendChild(notice);
+          
+          setTimeout(() => {
+            extraImagesPreview.removeChild(notice);
+          }, 3000);
+        }
+      }
+      
+      // 清空文件输入以便下次选择
+      this.value = '';
+    });
+    
+    // 删除额外图片
+    function deleteExtraImage(e, index) {
+      e.stopPropagation();
+      
+      // 从数组中删除该图片
+      extraImagesArray.splice(index, 1);
+      
+      // 更新预览
+      updateExtraImagesPreview();
+    }
+    
+    // 创建要提交的文件列表
+    function createExtraImagesFileList() {
+      // 创建一个FormData对象用于表单提交
+      const formData = new FormData();
+      
+      // 添加额外图片
+      extraImagesArray.forEach((file, index) => {
+        formData.append(`extra_images`, file);
+      });
+      
+      // 注意：这里仅准备了数据，实际提交在下面的表单提交事件中处理
+    }
+    
+    // 表单提交前处理额外图片
+    document.getElementById('productForm').addEventListener('submit', function(e) {
+      if (extraImagesArray.length > 0) {
+        // 临时阻止表单提交
+        e.preventDefault();
+        
+        try {
+          // 使用DataTransfer API创建包含所有文件的FileList
+          const dataTransfer = new DataTransfer();
+          
+          // 添加所有文件到DataTransfer对象
+          extraImagesArray.forEach(file => {
+            dataTransfer.items.add(file);
+          });
+          
+          // 创建新的文件输入元素
+          const fileInput = document.createElement('input');
+          fileInput.type = 'file';
+          fileInput.name = 'extra_images';
+          fileInput.multiple = true;
+          fileInput.style.display = 'none';
+          
+          // 使用DataTransfer的files设置文件输入的files属性
+          fileInput.files = dataTransfer.files;
+          
+          // 将新的文件输入添加到表单
+          this.appendChild(fileInput);
+          
+          // 继续提交表单
+          setTimeout(() => this.submit(), 0);
+        } catch (error) {
+          console.error('处理图片上传时出错:', error);
+          
+          // 如果出错，也允许表单提交
+          // 既然我们已经阻止了默认事件，需要手动提交
+          this.submit();
+        }
+      }
+      // 如果没有额外图片，表单正常提交
+    });
+  });
+</script>
+{% endblock %} 

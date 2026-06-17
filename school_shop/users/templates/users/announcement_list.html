@@ -1,0 +1,220 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+  .announcement-container {
+    max-width: 800px;
+    margin: 48px auto;
+    padding: 0 12px;
+  }
+  
+  .announcement-header {
+    text-align: center;
+    margin-bottom: 36px;
+    position: relative;
+  }
+  
+  .announcement-title {
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 12px;
+    position: relative;
+    display: inline-block;
+  }
+  
+  .announcement-title::after {
+    content: "";
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(to right, #3f51b5, #6610f2);
+    border-radius: 3px;
+  }
+  
+  .announcement-subtitle {
+    color: #666;
+    font-size: 1.1rem;
+    margin-top: 16px;
+  }
+  
+  .announcement-list {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-bottom: 28px;
+  }
+  
+  .announcement-item {
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
+    border-color: #eee;
+    padding: 18px 24px;
+    transition: all 0.3s ease;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .announcement-item:first-child {
+    border-top: 0;
+  }
+  
+  .announcement-item:last-child {
+    border-bottom: 0;
+  }
+  
+  .announcement-item:hover {
+    background-color: rgba(63, 81, 181, 0.06);
+    transform: translateY(-2px);
+    z-index: 2;
+  }
+  
+  .announcement-item-title {
+    font-weight: 600;
+    font-size: 1.15rem;
+    color: #333;
+    text-decoration: none;
+    display: block;
+    padding-right: 24px;
+    position: relative;
+  }
+  
+  .announcement-item-title:hover {
+    color: #3f51b5;
+  }
+  
+  .announcement-item-title::after {
+    content: "\f054";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #3f51b5;
+    font-size: 0.9rem;
+    opacity: 0;
+    transition: all 0.3s ease;
+  }
+  
+  .announcement-item:hover .announcement-item-title::after {
+    opacity: 1;
+    right: -8px;
+  }
+  
+  .announcement-item-meta {
+    color: #999;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .announcement-item-date {
+    display: flex;
+    align-items: center;
+  }
+  
+  .announcement-item-date i {
+    margin-right: 5px;
+    font-size: 0.85rem;
+  }
+  
+  .announcement-item-author {
+    display: flex;
+    align-items: center;
+  }
+  
+  .announcement-item-author i {
+    margin-right: 5px;
+    font-size: 0.85rem;
+  }
+  
+  .announcement-empty {
+    padding: 32px 0;
+    text-align: center;
+    color: #888;
+    font-style: italic;
+    font-size: 1.1rem;
+  }
+  
+  .home-btn {
+    display: block;
+    width: 180px;
+    margin: 0 auto;
+    padding: 12px;
+    border-radius: 10px;
+    background: #f8f9fa;
+    color: #333;
+    border: 1px solid #ddd;
+    font-weight: 500;
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+  
+  .home-btn:hover {
+    background: #f1f3f5;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+  
+  .home-btn i {
+    margin-right: 8px;
+  }
+  
+  @media (max-width: 576px) {
+    .announcement-item {
+      padding: 16px 20px;
+    }
+    
+    .announcement-item-title {
+      font-size: 1.05rem;
+    }
+    
+    .announcement-title {
+      font-size: 2rem;
+    }
+  }
+</style>
+
+<div class="announcement-container">
+  <div class="announcement-header">
+    <h1 class="announcement-title">系统公告</h1>
+    <p class="announcement-subtitle">了解最新的平台动态和重要信息</p>
+  </div>
+  
+  <div class="announcement-list">
+    {% for ann in announcements %}
+    <div class="announcement-item list-group-item">
+      <a href="{% url 'users:announcement_detail' ann.pk %}" class="announcement-item-title">
+        {{ ann.title }}
+      </a>
+      <div class="announcement-item-meta">
+        <span class="announcement-item-date">
+          <i class="fas fa-calendar-alt"></i> {{ ann.created_at|date:"Y-m-d H:i" }}
+        </span>
+        {% if ann.author %}
+        <span class="announcement-item-author">
+          <i class="fas fa-user"></i> {{ ann.author.username }}
+        </span>
+        {% endif %}
+      </div>
+    </div>
+    {% empty %}
+    <div class="announcement-empty">
+      <i class="fas fa-bell-slash me-2"></i> 暂无公告
+    </div>
+    {% endfor %}
+  </div>
+  
+  <a href="/" class="home-btn btn">
+    <i class="fas fa-home"></i> 返回首页
+  </a>
+</div>
+{% endblock %} 

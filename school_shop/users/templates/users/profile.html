@@ -1,0 +1,367 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% block content %}
+<style>
+  .profile-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 15px;
+  }
+  
+  .profile-header {
+    text-align: center;
+    margin-bottom: 40px;
+    position: relative;
+  }
+  
+  .profile-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 10px;
+    position: relative;
+    display: inline-block;
+  }
+  
+  .profile-title::after {
+    content: "";
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(to right, #3f51b5, #6610f2);
+    border-radius: 2px;
+  }
+  
+  .profile-card {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    overflow: hidden;
+    padding: 0;
+    transition: all 0.3s ease;
+  }
+  
+  .profile-sidebar {
+    background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%);
+    color: #fff;
+    padding: 30px 20px;
+    text-align: center;
+  }
+  
+  .avatar-container {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 20px;
+  }
+  
+  .avatar-preview {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+  }
+  
+  .avatar-upload-icon {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: #fff;
+    color: #4b6cb7;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .avatar-upload-icon:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+  
+  .avatar-upload {
+    display: none;
+  }
+  
+  .user-name {
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+  }
+  
+  .user-info {
+    color: rgba(255,255,255,0.8);
+    font-size: 0.95rem;
+  }
+  
+  .sidebar-nav {
+    margin-top: 30px;
+  }
+  
+  .nav-item {
+    margin-bottom: 10px;
+  }
+  
+  .nav-link {
+    display: flex;
+    align-items: center;
+    color: rgba(255,255,255,0.8);
+    padding: 12px 15px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+  
+  .nav-link:hover, .nav-link.active {
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+  }
+  
+  .nav-link i {
+    margin-right: 10px;
+    font-size: 1.1rem;
+  }
+  
+  .profile-content {
+    padding: 40px;
+  }
+  
+  .profile-content h3 {
+    font-weight: 600;
+    font-size: 1.4rem;
+    margin-bottom: 25px;
+    color: #333;
+    position: relative;
+    padding-bottom: 12px;
+  }
+  
+  .profile-content h3::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background: #4b6cb7;
+    border-radius: 3px;
+  }
+  
+  .form-group {
+    margin-bottom: 25px;
+  }
+  
+  .form-label {
+    font-weight: 500;
+    margin-bottom: 8px;
+    display: block;
+    color: #555;
+  }
+  
+  .form-control {
+    border-radius: 10px;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    transition: all 0.2s ease;
+  }
+  
+  .form-control:focus {
+    border-color: #4b6cb7;
+    box-shadow: 0 0 0 3px rgba(75, 108, 183, 0.15);
+  }
+  
+  .btn-save {
+    background: linear-gradient(to right, #4b6cb7, #182848);
+    color: #fff;
+    border: none;
+    padding: 14px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1.05rem;
+    margin-top: 15px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(75, 108, 183, 0.3);
+  }
+  
+  .btn-save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(75, 108, 183, 0.4);
+  }
+  
+  .address-link {
+    display: inline-flex;
+    align-items: center;
+    color: #4b6cb7;
+    text-decoration: none;
+    font-weight: 500;
+    margin-top: 20px;
+    transition: all 0.2s ease;
+  }
+  
+  .address-link:hover {
+    color: #182848;
+    transform: translateX(5px);
+  }
+  
+  .address-link i {
+    margin-right: 6px;
+  }
+  
+  @media (max-width: 991px) {
+    .profile-card {
+      flex-direction: column;
+    }
+    
+    .profile-sidebar {
+      padding-bottom: 20px;
+    }
+    
+    .sidebar-nav {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .nav-item {
+      margin-bottom: 0;
+    }
+    
+    .nav-link {
+      padding: 10px 15px;
+    }
+  }
+  
+  @media (max-width: 767px) {
+    .profile-content {
+      padding: 30px 20px;
+    }
+    
+    .avatar-container {
+      width: 120px;
+      height: 120px;
+    }
+    
+    .avatar-preview {
+      width: 120px;
+      height: 120px;
+    }
+    
+    .user-name {
+      font-size: 1.4rem;
+    }
+  }
+</style>
+
+<div class="profile-container">
+  <div class="profile-header">
+    <h1 class="profile-title">个人中心</h1>
+  </div>
+  
+  <div class="profile-card d-flex">
+    <div class="profile-sidebar">
+      <div class="avatar-container">
+        {% if profile.avatar %}
+          <img src="{{ profile.avatar.url }}" class="avatar-preview" alt="头像">
+        {% else %}
+          <img src="https://via.placeholder.com/150?text=头像" class="avatar-preview" alt="默认头像">
+        {% endif %}
+        <label for="id_avatar" class="avatar-upload-icon">
+          <i class="fas fa-camera"></i>
+        </label>
+      </div>
+      
+      <div class="user-name">{{ user.username }}</div>
+      <div class="user-info">
+        {% if profile.nickname %}{{ profile.nickname }}{% else %}未设置昵称{% endif %}
+      </div>
+      
+      <div class="sidebar-nav">
+        <div class="nav-item">
+          <a href="{% url 'users:profile' %}" class="nav-link active">
+            <i class="fas fa-user"></i> 个人资料
+          </a>
+        </div>
+        <div class="nav-item">
+          <a href="{% url 'users:address_list' %}" class="nav-link">
+            <i class="fas fa-map-marker-alt"></i> 收货地址
+          </a>
+        </div>
+        <div class="nav-item">
+          <a href="{% url 'users:my_products' %}" class="nav-link">
+            <i class="fas fa-box"></i> 我的商品
+          </a>
+        </div>
+        <div class="nav-item">
+          <a href="{% url 'users:my_orders' %}" class="nav-link">
+            <i class="fas fa-shopping-bag"></i> 我的订单
+          </a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="profile-content flex-grow-1">
+      <h3>编辑个人资料</h3>
+      
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="avatar" id="id_avatar" class="avatar-upload">
+        
+        <div class="form-group">
+          <label for="id_nickname" class="form-label">昵称</label>
+          {{ form.nickname|add_class:"form-control" }}
+        </div>
+        
+        <div class="form-group">
+          <label for="id_contact" class="form-label">联系方式</label>
+          {{ form.contact|add_class:"form-control" }}
+          <small class="text-muted">可以填写微信、QQ或手机号码</small>
+        </div>
+        
+        <button type="submit" class="btn btn-save w-100">
+          <i class="fas fa-save me-2"></i> 保存修改
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 头像上传交互
+  document.addEventListener('DOMContentLoaded', function() {
+    const avatarIcon = document.querySelector('.avatar-upload-icon');
+    const avatarInput = document.querySelector('#id_avatar');
+    const avatarPreview = document.querySelector('.avatar-preview');
+    
+    // 点击图标触发文件上传
+    avatarIcon.addEventListener('click', function(e) {
+      e.preventDefault();
+      avatarInput.click();
+    });
+    
+    // 文件选择后预览
+    avatarInput.addEventListener('change', function() {
+      if (this.files && this.files[0]) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+          avatarPreview.src = e.target.result;
+        };
+        
+        reader.readAsDataURL(this.files[0]);
+      }
+    });
+  });
+</script>
+{% endblock %} 

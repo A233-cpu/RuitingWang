@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% block content %}
+<style>
+  .address-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 15px;
+  }
+  
+  .address-header {
+    text-align: center;
+    margin-bottom: 40px;
+    position: relative;
+  }
+  
+  .address-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 10px;
+    position: relative;
+    display: inline-block;
+  }
+  
+  .address-title::after {
+    content: "";
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(to right, #3f51b5, #6610f2);
+    border-radius: 2px;
+  }
+  
+  .address-card {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    overflow: hidden;
+    padding: 0;
+    transition: all 0.3s ease;
+    max-width: 600px;
+    margin: 0 auto 30px;
+  }
+  
+  .address-content {
+    padding: 40px;
+  }
+  
+  .form-group {
+    margin-bottom: 25px;
+  }
+  
+  .form-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #444;
+    font-size: 1rem;
+  }
+  
+  .form-control {
+    width: 100%;
+    padding: 14px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+  }
+  
+  .form-control:focus {
+    border-color: #3f51b5;
+    box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.15);
+    outline: none;
+  }
+  
+  .form-hint {
+    color: #777;
+    font-size: 0.85rem;
+    margin-top: 6px;
+  }
+  
+  .form-actions {
+    margin-top: 35px;
+    display: flex;
+    gap: 15px;
+  }
+  
+  .btn-save {
+    background: linear-gradient(to right, #4caf50, #2e7d32);
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    flex: 1;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.2);
+  }
+  
+  .btn-save:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);
+  }
+  
+  .btn-save i {
+    margin-right: 8px;
+  }
+  
+  .btn-cancel {
+    background: #f5f5f5;
+    color: #555;
+    border: 1px solid #ddd;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    flex: 1;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .btn-cancel:hover {
+    background: #eee;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
+  }
+  
+  .btn-cancel i {
+    margin-right: 8px;
+  }
+  
+  .input-icon-container {
+    position: relative;
+  }
+  
+  .input-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #777;
+  }
+  
+  .input-with-icon {
+    padding-left: 45px;
+  }
+  
+  @media (max-width: 768px) {
+    .address-content {
+      padding: 30px 20px;
+    }
+    
+    .address-title {
+      font-size: 1.8rem;
+    }
+    
+    .form-actions {
+      flex-direction: column;
+    }
+    
+    .btn-save, .btn-cancel {
+      width: 100%;
+    }
+  }
+</style>
+
+<div class="address-container">
+  <div class="address-header">
+    <h1 class="address-title">{% if form.instance.pk %}编辑地址{% else %}添加新地址{% endif %}</h1>
+  </div>
+  
+  <div class="address-card">
+    <div class="address-content">
+      <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+          <label for="id_receiver" class="form-label">收货人</label>
+          <div class="input-icon-container">
+            <i class="fas fa-user input-icon"></i>
+            {% render_field form.receiver class="form-control input-with-icon" %}
+          </div>
+          <div class="form-hint">请填写收件人的真实姓名</div>
+        </div>
+        
+        <div class="form-group">
+          <label for="id_phone" class="form-label">联系电话</label>
+          <div class="input-icon-container">
+            <i class="fas fa-phone input-icon"></i>
+            {% render_field form.phone class="form-control input-with-icon" %}
+          </div>
+          <div class="form-hint">请填写正确的手机号码，方便配送人员联系</div>
+        </div>
+        
+        <div class="form-group">
+          <label for="id_detail" class="form-label">详细地址</label>
+          <div class="input-icon-container">
+            <i class="fas fa-map-marker-alt input-icon"></i>
+            {% render_field form.detail class="form-control input-with-icon" %}
+          </div>
+          <div class="form-hint">请填写详细的收货地址，包括校区、宿舍楼、房间号等信息</div>
+        </div>
+        
+        <div class="form-actions">
+          <button type="submit" class="btn-save">
+            <i class="fas fa-save"></i> 保存地址
+          </button>
+          <a href="{% url 'users:address_list' %}" class="btn-cancel">
+            <i class="fas fa-arrow-left"></i> 返回列表
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %} 

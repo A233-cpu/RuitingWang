@@ -1,0 +1,404 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+  /* 整体风格与动画 */
+  .home-title {
+    text-align: center;
+    margin: 20px 0 30px;
+    font-size: 2.2rem;
+    font-weight: 700;
+    position: relative;
+    color: #333;
+  }
+  
+  .home-title:after {
+    content: "";
+    display: block;
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(to right, #007bff, #6610f2);
+    border-radius: 2px;
+    margin: 8px auto 0;
+  }
+  
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #333;
+    position: relative;
+    display: inline-block;
+  }
+  
+  .section-title:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -5px;
+    width: 100%;
+    height: 3px;
+    background-color: #007bff;
+    border-radius: 2px;
+  }
+  
+  /* 搜索栏优化 */
+  .search-container {
+    background: rgba(255, 255, 255, 0.96);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    margin-bottom: 30px;
+  }
+  
+  .search-bar {
+    max-width: 700px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+  }
+  
+  .search-bar .form-control {
+    border-radius: 30px;
+    padding: 12px 20px;
+    font-size: 1rem;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    transition: all 0.3s;
+  }
+  
+  .search-bar .form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+  }
+  
+  .search-bar .btn {
+    border-radius: 30px;
+    padding: 8px 25px;
+    font-weight: 600;
+    font-size: 1rem;
+    height: auto;
+    align-self: center;
+  }
+
+  /* 分类导航 */
+  .category-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    height: 100%;
+    padding: 12px 10px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 16px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  }
+  
+  .category-item {
+    padding: 12px 10px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: all 0.2s;
+    color: #444;
+    font-weight: 500;
+    text-decoration: none;
+    text-align: center;
+  }
+  
+  .category-item:hover, .category-item.active {
+    background: #007bff;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+  
+  .category-item i {
+    margin-right: 6px;
+  }
+  
+  /* 轮播图优化 */
+  .carousel-inner img {
+    max-height: 350px;
+    min-height: 200px;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+  }
+  
+  .carousel {
+    width: 100%;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  
+  .carousel-control-prev, .carousel-control-next {
+    width: 10%;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    height: 50px;
+    width: 50px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  
+  .carousel-control-prev {
+    left: 20px;
+  }
+  
+  .carousel-control-next {
+    right: 20px;
+  }
+  
+  /* 商品列表优化 */
+  #product-list {
+    margin-top: 30px;
+  }
+  
+  .card.h-100 {
+    border-radius: 16px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.07);
+    transition: all 0.3s ease;
+    border: none;
+    background: #ffffff;
+    min-width: 180px;
+    max-width: 100%;
+    width: 100%;
+    height: 360px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+  }
+  
+  .card.h-100:hover {
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    transform: translateY(-8px);
+  }
+  
+  .card-img-top {
+    height: 180px;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+  
+  .card:hover .card-img-top {
+    transform: scale(1.05);
+  }
+  
+  .card-body {
+    padding: 16px;
+  }
+  
+  .card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .card-text {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+  }
+  
+  .card-text.text-danger {
+    font-size: 1.2rem;
+    margin-top: 10px;
+  }
+  
+  .card-footer {
+    background: none;
+    border-top: none;
+    padding: 12px 16px;
+    text-align: center;
+  }
+  
+  .card-footer .btn {
+    border-radius: 30px;
+    padding: 8px 20px;
+    font-weight: 500;
+    margin: 0 auto;
+    display: inline-block;
+    float: none;
+    transition: all 0.3s ease;
+    width: 100%;
+  }
+  
+  .card-footer .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+  }
+  
+  /* 响应式优化 */
+  @media (min-width: 1200px) {
+    .row-cols-xl-5 > .col { flex: 0 0 auto; width: 20%; }
+  }
+  
+  @media (max-width: 1199.98px) and (min-width: 992px) {
+    .row-cols-lg-4 > .col { flex: 0 0 auto; width: 25%; }
+  }
+  
+  @media (max-width: 991.98px) and (min-width: 768px) {
+    .row-cols-md-3 > .col { flex: 0 0 auto; width: 33.33333333%; }
+    .card.h-100 { height: 340px; }
+  }
+  
+  @media (max-width: 767.98px) {
+    .row-cols-1 > .col { flex: 0 0 auto; width: 100%; }
+    .card-img-top { height: 160px; }
+    .card.h-100 { height: auto; max-width: 100%; }
+    .home-title { font-size: 1.8rem; }
+    
+    .feature-section {
+      display: block;
+    }
+    
+    .category-nav {
+      flex-direction: row;
+      overflow-x: auto;
+      margin-bottom: 20px;
+    }
+    
+    .category-item {
+      flex: 0 0 auto;
+    }
+  }
+  
+  /* 无商品状态优化 */
+  .no-products {
+    background: rgba(255,255,255,0.9);
+    border-radius: 16px;
+    padding: 40px 20px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  }
+  
+  .no-products i {
+    font-size: 3rem;
+    color: #ccc;
+    margin-bottom: 15px;
+    display: block;
+  }
+  
+  /* 布局优化 */
+  .feature-section {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+  
+  .feature-section .left-col {
+    width: 200px;
+    flex-shrink: 0;
+  }
+  
+  .feature-section .right-col {
+    width: 200px;
+    flex-shrink: 0;
+  }
+  
+  .feature-section .center-col {
+    flex-grow: 1;
+  }
+</style>
+
+<div class="container py-4">
+  <!-- 搜索栏 -->
+  <div class="search-container">
+    <form method="get" class="search-bar">
+      <input type="text" name="q" class="form-control" placeholder="搜索你想要的商品..." value="{{ query }}">
+      <button type="submit" class="btn btn-primary">搜索</button>
+    </form>
+  </div>
+
+  {% if not query %}
+    <!-- 分类+轮播图区域 -->
+    <div class="feature-section">
+      <!-- 左侧分类 -->
+      <div class="left-col">
+        <div class="category-nav">
+          <a href="/" class="category-item {% if not current_category %}active{% endif %}">全部商品</a>
+          <a href="/?category=books" class="category-item {% if current_category == 'books' %}active{% endif %}">教材书籍</a>
+          <a href="/?category=digital" class="category-item {% if current_category == 'digital' %}active{% endif %}">数码产品</a>
+          <a href="/?category=clothes" class="category-item {% if current_category == 'clothes' %}active{% endif %}">服装鞋包</a>
+        </div>
+      </div>
+      
+      <!-- 中间轮播图 -->
+      <div class="center-col">
+        {% if banners %}
+        <div id="mainCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
+          <div class="carousel-inner">
+            {% for banner in banners %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+              {% if banner.link %}
+              <a href="{{ banner.link }}" target="_blank">
+                <img src="{{ banner.image.url }}" class="d-block w-100" alt="Banner {{ forloop.counter }}">
+              </a>
+              {% else %}
+              <img src="{{ banner.image.url }}" class="d-block w-100" alt="Banner {{ forloop.counter }}">
+              {% endif %}
+            </div>
+            {% endfor %}
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#mainCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">上一张</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#mainCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">下一张</span>
+          </button>
+        </div>
+        {% endif %}
+      </div>
+      
+      <!-- 右侧分类 -->
+      <div class="right-col">
+        <div class="category-nav">
+          <a href="/?category=daily" class="category-item {% if current_category == 'daily' %}active{% endif %}">日常用品</a>
+          <a href="/?category=sports" class="category-item {% if current_category == 'sports' %}active{% endif %}">运动健身</a>
+          <a href="/?category=others" class="category-item {% if current_category == 'others' %}active{% endif %}">其他分类</a>
+          <a href="{% url 'users:product_create' %}{% if current_category %}?category={{ current_category }}{% endif %}" class="category-item" style="background:#ff7700;color:white">发布闲置</a>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+  
+  <!-- 商品列表区域 -->
+  <div id="product-list">
+    <h2 class="section-title">{{ query|default:"最新上架" }}</h2>
+    
+    {% if products %}
+    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-4">
+      {% for product in products %}
+      <div class="col">
+        <div class="card h-100">
+          <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+          <div class="card-body">
+            <h5 class="card-title">{{ product.name }}</h5>
+            <p class="card-text text-truncate">{{ product.description|truncatechars:50 }}</p>
+            <p class="card-text text-danger fw-bold">￥{{ product.price }}</p>
+          </div>
+          <div class="card-footer">
+            <a href="{% url 'users:product_detail' product.pk %}" class="btn btn-outline-primary">查看详情</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="no-products">
+      <i class="bi bi-inbox"></i>
+      <p>暂无相关商品，请稍后再来看看~</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %} 

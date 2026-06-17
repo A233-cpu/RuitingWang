@@ -1,0 +1,432 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+  .product-detail-card {
+    background: rgba(255,255,255,0.95);
+    border-radius: 24px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.08);
+    padding: 40px 32px 32px;
+    margin-bottom: 40px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 48px;
+    transition: all 0.3s ease;
+  }
+  
+  .product-detail-img-container {
+    flex: 1 1 400px;
+    min-width: 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .product-main-img-wrapper {
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    background: #f8f8f8;
+    aspect-ratio: 1/1;
+  }
+  
+  .product-detail-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+  
+  .product-detail-img:hover {
+    transform: scale(1.02);
+  }
+  
+  .product-thumbnails {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 8px;
+  }
+  
+  .product-thumbnail {
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    object-fit: cover;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+  }
+  
+  .product-thumbnail:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+  
+  .product-thumbnail.active {
+    border-color: #3f51b5;
+    box-shadow: 0 0 0 2px rgba(63, 81, 181, 0.2);
+  }
+  
+  .product-detail-info {
+    flex: 1 1 400px;
+    min-width: 280px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .product-detail-info h2 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: #222;
+    line-height: 1.2;
+  }
+  
+  .product-detail-info .price {
+    color: #e53935;
+    font-size: 2.4rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    display: inline-block;
+    position: relative;
+  }
+  
+  .product-detail-info .price::before {
+    content: "";
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 80px;
+    height: 3px;
+    background: #e53935;
+    border-radius: 2px;
+  }
+  
+  .product-detail-info .meta {
+    color: #666;
+    margin-bottom: 24px;
+    font-size: 1.05rem;
+    display: flex;
+    align-items: center;
+  }
+  
+  .product-detail-info .meta i {
+    margin-right: 8px;
+    color: #888;
+  }
+  
+  .product-detail-info .desc {
+    margin-bottom: 32px;
+    color: #333;
+    font-size: 1.15rem;
+    line-height: 1.6;
+    padding: 16px;
+    background: rgba(0,0,0,0.02);
+    border-radius: 12px;
+    border-left: 4px solid #3f51b5;
+  }
+  
+  .product-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 24px;
+  }
+  
+  .product-detail-info .btn {
+    min-width: 140px;
+    padding: 12px 20px;
+    font-size: 1.05rem;
+    font-weight: 500;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+  }
+  
+  .product-detail-info .btn-success {
+    background: #4caf50;
+    border-color: #4caf50;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+  }
+  
+  .product-detail-info .btn-success:hover {
+    background: #43a047;
+    box-shadow: 0 6px 16px rgba(76, 175, 80, 0.3);
+    transform: translateY(-2px);
+  }
+  
+  .product-detail-info .btn-outline-primary {
+    border-width: 2px;
+    box-shadow: 0 4px 12px rgba(63, 81, 181, 0.1);
+  }
+  
+  .product-detail-info .btn-outline-primary:hover {
+    box-shadow: 0 6px 16px rgba(63, 81, 181, 0.2);
+    transform: translateY(-2px);
+  }
+  
+  .product-detail-info .btn-secondary {
+    background: #f5f5f5;
+    color: #333;
+    border-color: #ddd;
+  }
+  
+  @media (max-width: 900px) {
+    .product-detail-card { 
+      flex-direction: column; 
+      align-items: stretch;
+      padding: 24px 20px;
+      gap: 32px;
+    }
+    .product-detail-img { max-width: 100%; }
+    .product-detail-info h2 { font-size: 1.8rem; }
+    .product-detail-info .price { font-size: 2rem; }
+    .product-thumbnail { width: 60px; height: 60px; }
+  }
+  
+  .comment-section {
+    background: rgba(255,255,255,0.95);
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    padding: 32px 28px;
+    margin-bottom: 40px;
+  }
+  
+  .comment-section h4 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-bottom: 24px;
+    color: #333;
+    position: relative;
+    display: inline-block;
+  }
+  
+  .comment-section h4::after {
+    content: "";
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background: #3f51b5;
+    border-radius: 2px;
+  }
+  
+  .comment-form textarea {
+    border-radius: 12px;
+    padding: 12px;
+    border-color: #ddd;
+    transition: all 0.3s ease;
+  }
+  
+  .comment-form textarea:focus {
+    box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.15);
+    border-color: #3f51b5;
+  }
+  
+  .comment-item {
+    border: 1px solid #eee;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    transition: all 0.2s ease;
+  }
+  
+  .comment-item:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+    transform: translateY(-2px);
+  }
+  
+  .comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .comment-user {
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .comment-time {
+    color: #999;
+    font-size: 0.9rem;
+  }
+  
+  .comment-content {
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+  
+  .comment-actions a {
+    color: #3f51b5;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+  
+  .comment-actions a:hover {
+    text-decoration: underline;
+  }
+  
+  .reply-form {
+    margin: 12px 0;
+    padding: 16px;
+    background: #f8f8f8;
+    border-radius: 12px;
+  }
+  
+  .reply-item {
+    background: #f9f9f9;
+    border-radius: 12px;
+    padding: 16px;
+    margin: 12px 0 12px 24px;
+    border-left: 3px solid #3f51b5;
+  }
+</style>
+<div class="container mt-5">
+  <div class="product-detail-card">
+    <div class="product-detail-img-container">
+      <div class="product-main-img-wrapper">
+        <img src="{{ product.image.url }}" class="product-detail-img" id="mainProductImage" alt="{{ product.name }}">
+      </div>
+      
+      <div class="product-thumbnails">
+        <!-- 主图缩略图 -->
+        <img src="{{ product.image.url }}" class="product-thumbnail active" 
+             onclick="changeMainImage(this, '{{ product.image.url }}')" alt="{{ product.name }}">
+        
+        <!-- 额外图片缩略图 -->
+        {% if product.images.exists %}
+          {% for extra_img in product.images.all %}
+            <img src="{{ extra_img.image.url }}" class="product-thumbnail" 
+                 onclick="changeMainImage(this, '{{ extra_img.image.url }}')" alt="{{ product.name }}">
+          {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+    <div class="product-detail-info">
+      <div>
+        <h2>{{ product.name }}</h2>
+        <div class="price">￥{{ product.price }}</div>
+        <div class="meta">
+          <i class="fas fa-user"></i> 发布人：{{ product.seller.username }}
+        </div>
+        <div class="desc">{{ product.description }}</div>
+      </div>
+      <div class="product-actions">
+        {% if user.is_authenticated and product.status == 'active' and user != product.seller %}
+        <form method="post" action="{% url 'users:buy_product' product.pk %}" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-success"><i class="fas fa-shopping-bag me-2"></i>立即购买</button>
+        </form>
+        <form method="post" action="{% url 'users:cart_add' product.pk %}" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-outline-primary"><i class="fas fa-cart-plus me-2"></i>加入购物车</button>
+        </form>
+        {% elif not user.is_authenticated and product.status == 'active' %}
+        <a href="{% url 'users:login' %}?next={{ request.path }}" class="btn btn-primary"><i class="fas fa-sign-in-alt me-2"></i>登录后购买</a>
+        {% endif %}
+        <a href="/" class="btn btn-secondary"><i class="fas fa-home me-2"></i>返回首页</a>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container comment-section">
+  <h4>评论区</h4>
+  <div class="mb-4 comment-form">
+    {% if user.is_authenticated %}
+    <form method="post" action="{% url 'users:comment_add' product.pk %}">
+      {% csrf_token %}
+      {{ comment_form.as_p }}
+      <button type="submit" class="btn btn-primary"><i class="fas fa-comment me-2"></i>发表评论</button>
+    </form>
+    {% else %}
+    <p>请<a href="{% url 'users:login' %}?next={{ request.path }}">登录</a>后发表评论。</p>
+    {% endif %}
+  </div>
+  <div>
+    {% for comment in comments %}
+    <div class="comment-item">
+      <div class="comment-header">
+        <span class="comment-user">{{ comment.user.username }}</span>
+        <span class="comment-time">{{ comment.created_at|date:"Y-m-d H:i" }}</span>
+      </div>
+      <p class="comment-content">{{ comment.content }}</p>
+      <div class="comment-actions mb-2">
+        <a href="#" onclick="document.getElementById('reply-form-{{ comment.id }}').style.display='block';return false;"><i class="fas fa-reply me-1"></i>回复</a>
+      </div>
+      <div id="reply-form-{{ comment.id }}" style="display:none;" class="reply-form">
+        <form method="post" action="{% url 'users:comment_reply' product.pk comment.id %}">
+          {% csrf_token %}
+          {{ comment_form.as_p }}
+          <button type="submit" class="btn btn-sm btn-outline-primary">回复</button>
+          <button type="button" class="btn btn-sm btn-secondary" onclick="this.parentElement.parentElement.style.display='none';">取消</button>
+        </form>
+      </div>
+      {% for reply in comment.replies.all %}
+      <div class="reply-item">
+        <div class="comment-header">
+          <span class="comment-user">{{ reply.user.username }}</span>
+          <span class="comment-time">{{ reply.created_at|date:"Y-m-d H:i" }}</span>
+        </div>
+        <p class="comment-content">{{ reply.content }}</p>
+      </div>
+      {% endfor %}
+    </div>
+    {% empty %}
+    <p class="text-muted text-center py-4">暂无评论，快来抢沙发吧！</p>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+  function changeMainImage(thumbnail, imageUrl) {
+    // 更新主图
+    document.getElementById('mainProductImage').src = imageUrl;
+    
+    // 更新缩略图状态
+    const thumbnails = document.querySelectorAll('.product-thumbnail');
+    thumbnails.forEach(thumb => {
+      thumb.classList.remove('active');
+    });
+    thumbnail.classList.add('active');
+  }
+  
+  // 将UTC时间转换为本地时间
+  document.addEventListener('DOMContentLoaded', function() {
+    // 选择所有评论时间元素
+    const timeElements = document.querySelectorAll('.comment-time');
+    
+    timeElements.forEach(function(element) {
+      // 获取元素内的时间文本，格式为 "YYYY-MM-DD HH:MM"
+      const timeText = element.textContent.trim();
+      
+      // 将文本转换为日期对象（默认为UTC时间）
+      const utcDate = new Date(timeText.replace(' ', 'T') + ':00Z');
+      
+      // 检查日期是否有效
+      if (!isNaN(utcDate.getTime())) {
+        // 格式化为本地时间
+        const localTime = utcDate.toLocaleString('zh-CN', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        });
+        
+        // 更新元素内容
+        element.textContent = localTime;
+      }
+    });
+  });
+</script>
+{% endblock %} 

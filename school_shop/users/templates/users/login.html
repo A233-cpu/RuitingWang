@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% block content %}
+<style>
+  .login-form-container {
+    max-width: 460px;
+    margin: 60px auto;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    padding: 40px 36px 32px 36px;
+    transition: all 0.3s ease;
+    transform: translateY(0);
+  }
+  
+  .login-form-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  }
+  
+  .login-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 28px;
+    text-align: center;
+    position: relative;
+  }
+  
+  .login-title:after {
+    content: "";
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(to right, #007bff, #6610f2);
+    border-radius: 3px;
+  }
+  
+  .login-form-row {
+    margin-bottom: 24px;
+  }
+  
+  .login-form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #444;
+    font-size: 0.95rem;
+  }
+  
+  .login-form-input {
+    width: 100%;
+  }
+  
+  .login-form-input .form-control {
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    padding: 12px 16px;
+    transition: all 0.2s ease;
+    font-size: 1rem;
+  }
+  
+  .login-form-input .form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+  }
+  
+  .login-btn {
+    background: linear-gradient(to right, #007bff, #0056b3);
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    font-weight: 600;
+    font-size: 1.05rem;
+    margin-top: 10px;
+    transition: all 0.2s ease;
+  }
+  
+  .login-btn:hover {
+    background: linear-gradient(to right, #0069d9, #004494);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .login-link {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 0.95rem;
+  }
+  
+  .login-link a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
+  .login-link a:hover {
+    text-decoration: underline;
+  }
+  
+  @media (max-width: 576px) {
+    .login-form-container {
+      max-width: 100%;
+      margin: 20px auto;
+      padding: 30px 20px;
+      border-radius: 12px;
+    }
+  }
+</style>
+<div class="login-form-container">
+  <h2 class="login-title">欢迎登录</h2>
+  <form method="post">
+    {% csrf_token %}
+    {% for field in form %}
+      <div class="login-form-row">
+        <label for="{{ field.id_for_label }}" class="login-form-label">
+          {% if field.name == 'username' %}用户名
+          {% elif field.name == 'password' %}密码
+          {% else %}{{ field.label }}{% endif %}
+        </label>
+        <div class="login-form-input">
+          {{ field|add_class:"form-control" }}
+          {% for error in field.errors %}
+            <div class="text-danger small mt-1">{{ error }}</div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary w-100 login-btn">登 录</button>
+  </form>
+  <p class="login-link">还没有账号？<a href="{% url 'users:register' %}">立即注册</a></p>
+</div>
+{% endblock %} 

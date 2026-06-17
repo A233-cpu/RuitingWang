@@ -1,0 +1,652 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% block content %}
+<style>
+  .products-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 15px;
+  }
+  
+  .products-header {
+    text-align: center;
+    margin-bottom: 40px;
+    position: relative;
+  }
+  
+  .products-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 10px;
+    position: relative;
+    display: inline-block;
+  }
+  
+  .products-title::after {
+    content: "";
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(to right, #3f51b5, #6610f2);
+    border-radius: 2px;
+  }
+  
+  .products-subtitle {
+    color: #777;
+    font-size: 1.1rem;
+    max-width: 700px;
+    margin: 20px auto 0;
+  }
+  
+  .stats-card {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    padding: 25px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  
+  .stat-item {
+    padding: 15px 25px;
+    text-align: center;
+    flex: 1;
+    min-width: 200px;
+  }
+  
+  .stat-label {
+    font-size: 1rem;
+    color: #777;
+    margin-bottom: 8px;
+  }
+  
+  .stat-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #333;
+  }
+  
+  .earning-value {
+    color: #4caf50;
+  }
+  
+  .add-product-btn {
+    background: linear-gradient(to right, #3f51b5, #6610f2);
+    color: white;
+    border: none;
+    padding: 14px 30px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1.05rem;
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 30px;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(63, 81, 181, 0.2);
+    text-decoration: none;
+  }
+  
+  .add-product-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(63, 81, 181, 0.3);
+    color: white;
+  }
+  
+  .add-product-btn i {
+    margin-right: 10px;
+    font-size: 1.1rem;
+  }
+  
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+    margin-bottom: 30px;
+  }
+  
+  .product-card {
+    background: #fff;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.07);
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border: none;
+  }
+  
+  .product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+  }
+  
+  .product-image-container {
+    position: relative;
+    height: 180px;
+    overflow: hidden;
+    background: #f5f7fa;
+  }
+  
+  .product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+  }
+  
+  .product-card:hover .product-image {
+    transform: scale(1.08);
+  }
+  
+  .product-status {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 6px 12px;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    z-index: 2;
+    color: white;
+  }
+  
+  .status-active {
+    background: rgba(76, 175, 80, 0.9);
+  }
+  
+  .status-inactive {
+    background: rgba(244, 67, 54, 0.9);
+  }
+  
+  .status-pending {
+    background: rgba(255, 152, 0, 0.9);
+  }
+  
+  .product-content {
+    padding: 25px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .product-info {
+    margin-bottom: 20px;
+  }
+  
+  .product-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 12px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 2.8em;
+  }
+  
+  .product-description {
+    color: #666;
+    font-size: 0.95rem;
+    margin-bottom: 12px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 2.85em;
+  }
+  
+  .product-price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #f44336;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: baseline;
+  }
+  
+  .product-price .currency {
+    font-size: 1rem;
+    margin-right: 2px;
+  }
+  
+  .product-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 15px;
+  }
+  
+  .meta-item {
+    font-size: 0.9rem;
+    display: flex;
+    align-items: baseline;
+  }
+  
+  .meta-label {
+    color: #777;
+    margin-right: 8px;
+    white-space: nowrap;
+  }
+  
+  .meta-value {
+    font-weight: 500;
+    color: #333;
+  }
+  
+  .meta-date {
+    color: #999;
+    font-size: 0.85rem;
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .meta-date i {
+    margin-right: 5px;
+    font-size: 0.9rem;
+  }
+  
+  .product-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+  }
+  
+  .product-actions.three-actions {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .btn-product-action {
+    padding: 10px;
+    border-radius: 12px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    gap: 5px;
+  }
+  
+  .btn-view {
+    background-color: #fff;
+    color: #3f51b5;
+    border: 1px solid #3f51b5;
+  }
+  
+  .btn-view:hover {
+    background-color: #3f51b5;
+    color: white;
+  }
+  
+  .btn-down {
+    background-color: #fff;
+    color: #ff9800;
+    border: 1px solid #ff9800;
+  }
+  
+  .btn-down:hover {
+    background-color: #ff9800;
+    color: white;
+  }
+  
+  .btn-up {
+    background-color: #fff;
+    color: #4caf50;
+    border: 1px solid #4caf50;
+  }
+  
+  .btn-up:hover {
+    background-color: #4caf50;
+    color: white;
+  }
+  
+  .btn-delete {
+    background-color: #fff;
+    color: #f44336;
+    border: 1px solid #f44336;
+  }
+  
+  .btn-delete:hover {
+    background-color: #f44336;
+    color: white;
+  }
+  
+  .btn-product-action i {
+    font-size: 0.9rem;
+  }
+  
+  .no-products {
+    background: #f9f9f9;
+    border-radius: 20px;
+    padding: 60px;
+    text-align: center;
+    margin: 20px 0 40px;
+  }
+  
+  .no-products i {
+    font-size: 4rem;
+    color: #ccc;
+    margin-bottom: 20px;
+    display: block;
+  }
+  
+  .no-products-text {
+    color: #777;
+    font-size: 1.2rem;
+    margin-bottom: 25px;
+  }
+  
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    color: #3f51b5;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    margin-top: 15px;
+  }
+  
+  .back-link:hover {
+    transform: translateX(-5px);
+    color: #6610f2;
+  }
+  
+  .back-link i {
+    margin-right: 8px;
+  }
+  
+  /* 删除确认模态框样式 */
+  #deleteConfirmModal .modal-content {
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    border: none;
+    overflow: hidden;
+  }
+  
+  #deleteConfirmModal .modal-header {
+    background: linear-gradient(to right, #f44336, #d32f2f);
+    color: white;
+    padding: 20px 25px;
+    border: none;
+  }
+  
+  #deleteConfirmModal .modal-title {
+    font-weight: 600;
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+  }
+  
+  #deleteConfirmModal .modal-title i {
+    margin-right: 10px;
+    font-size: 1.4rem;
+  }
+  
+  #deleteConfirmModal .btn-close {
+    color: white;
+    opacity: 0.8;
+  }
+  
+  #deleteConfirmModal .modal-body {
+    padding: 30px 25px;
+    font-size: 1.05rem;
+    color: #444;
+    text-align: center;
+  }
+  
+  #deleteConfirmModal .product-name {
+    font-weight: 600;
+    margin: 0 3px;
+  }
+  
+  #deleteConfirmModal .modal-footer {
+    padding: 15px 25px 25px;
+    border: none;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+  }
+  
+  #deleteConfirmModal .btn {
+    padding: 12px 25px;
+    font-weight: 600;
+    border-radius: 12px;
+    min-width: 120px;
+  }
+  
+  #deleteConfirmModal .btn-secondary {
+    background: #f5f5f5;
+    color: #444;
+    border: 1px solid #ddd;
+  }
+  
+  #deleteConfirmModal .btn-danger {
+    background: linear-gradient(to right, #f44336, #d32f2f);
+    border: none;
+  }
+  
+  @media (max-width: 991px) {
+    .products-grid {
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    
+    .product-image-container {
+      height: 160px;
+    }
+    
+    .product-content {
+      padding: 20px;
+    }
+    
+    .products-title {
+      font-size: 1.9rem;
+    }
+  }
+  
+  @media (max-width: 767px) {
+    .products-grid {
+      grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
+    }
+    
+    .product-meta {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    
+    .stats-card {
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .stat-item {
+      width: 100%;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 15px;
+    }
+    
+    .stat-item:last-child {
+      border-bottom: none;
+    }
+  }
+</style>
+
+<div class="products-container">
+  <div class="products-header">
+    <h1 class="products-title">我的闲置物品</h1>
+    <p class="products-subtitle">在这里管理你发布的闲置物品，查看售卖情况和收益</p>
+  </div>
+  
+  <div class="stats-card">
+    <div class="stat-item">
+      <div class="stat-label">总商品数</div>
+      <div class="stat-value">{{ products|length }}</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">已上架</div>
+      <div class="stat-value">{{ products|filter_products:'active'|length }}</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">已下架</div>
+      <div class="stat-value">{{ products|filter_products:'inactive'|length }}</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">总收益</div>
+      <div class="stat-value earning-value">￥{{ total_earning|floatformat:2 }}</div>
+    </div>
+  </div>
+  
+  <div class="text-center mb-4">
+    <a href="{% url 'users:product_create' %}" class="add-product-btn">
+      <i class="fas fa-plus-circle"></i> 发布新商品
+    </a>
+  </div>
+  
+  {% if products %}
+    <div class="products-grid">
+      {% for product in products %}
+        <div class="product-card">
+          <div class="product-image-container">
+            <img src="{{ product.image.url }}" class="product-image" alt="{{ product.name }}">
+            <span class="product-status {% if product.status == 'active' %}status-active{% elif product.status == 'inactive' %}status-inactive{% else %}status-pending{% endif %}">
+              {{ product.get_status_display }}
+            </span>
+          </div>
+          <div class="product-content">
+            <div class="product-info">
+              <h3 class="product-title">{{ product.name }}</h3>
+              <p class="product-description">{{ product.description|truncatechars:80 }}</p>
+              <div class="product-price">
+                <span class="currency">￥</span>{{ product.price }}
+              </div>
+              <div class="product-meta">
+                <div class="meta-item">
+                  <span class="meta-label">类别:</span>
+                  <span class="meta-value">{{ product.get_category_display }}</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">收益:</span>
+                  <span class="meta-value" style="color: #4caf50;">￥{{ product_earnings|get_item:product.pk|floatformat:2 }}</span>
+                </div>
+              </div>
+              <div class="meta-date">
+                <i class="far fa-calendar-alt"></i> {{ product.created_at|date:"Y-m-d H:i" }}
+              </div>
+            </div>
+            
+            <div class="product-actions {% if product.status == 'inactive' %}three-actions{% endif %}">
+              <a href="{% url 'users:product_detail' product.pk %}" class="btn-product-action btn-view">
+                <i class="fas fa-eye"></i> 查看
+              </a>
+              
+              {% if product.status == 'active' %}
+                <form method="post" action="{% url 'users:product_toggle_status' product.pk %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn-product-action btn-down">
+                    <i class="fas fa-arrow-down"></i> 下架
+                  </button>
+                </form>
+              {% elif product.status == 'inactive' %}
+                <form method="post" action="{% url 'users:product_toggle_status' product.pk %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn-product-action btn-up">
+                    <i class="fas fa-arrow-up"></i> 上架
+                  </button>
+                </form>
+                <form method="post" action="{% url 'users:product_delete' product.pk %}" class="delete-form">
+                  {% csrf_token %}
+                  <button type="button" class="btn-product-action btn-delete delete-btn" data-product-name="{{ product.name }}" data-action="{% url 'users:product_delete' product.pk %}">
+                    <i class="fas fa-trash"></i> 删除
+                  </button>
+                </form>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="no-products">
+      <i class="fas fa-box-open"></i>
+      <p class="no-products-text">你还没有发布任何闲置物品</p>
+      <a href="{% url 'users:product_create' %}" class="add-product-btn">
+        <i class="fas fa-plus-circle"></i> 发布第一个闲置商品
+      </a>
+    </div>
+  {% endif %}
+  
+  <div class="text-center">
+    <a href="/" class="back-link">
+      <i class="fas fa-arrow-left"></i> 返回首页
+    </a>
+  </div>
+</div>
+
+<!-- 删除确认模态框 -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteConfirmModalLabel">
+          <i class="fas fa-exclamation-triangle"></i> 确认删除
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
+      </div>
+      <div class="modal-body">
+        你确定要删除该商品吗？此操作不可恢复。
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="fas fa-times"></i> 取消
+        </button>
+        <button type="button" class="btn btn-danger" id="modalDeleteBtn">
+          <i class="fas fa-trash"></i> 确认删除
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  let form = null;
+  let productName = '';
+  
+  document.querySelectorAll('.delete-btn').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      form = btn.closest('form');
+      productName = btn.getAttribute('data-product-name');
+      
+      // 更新模态框内容
+      document.querySelector('#deleteConfirmModal .modal-body').innerHTML = 
+        '你确定要删除 <span class="product-name">' + productName + '</span> 吗？此操作不可恢复。';
+      
+      var modal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+      modal.show();
+    });
+  });
+  
+  document.getElementById('modalDeleteBtn').addEventListener('click', function() {
+    if (form) {
+      form.submit();
+    }
+  });
+});
+</script>
+{% endblock %} 

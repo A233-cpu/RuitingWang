@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+  .address-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 15px;
+  }
+  
+  .address-header {
+    text-align: center;
+    margin-bottom: 40px;
+    position: relative;
+  }
+  
+  .address-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 10px;
+    position: relative;
+    display: inline-block;
+  }
+  
+  .address-title::after {
+    content: "";
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(to right, #f44336, #d32f2f);
+    border-radius: 2px;
+  }
+  
+  .address-card {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    overflow: hidden;
+    padding: 0;
+    transition: all 0.3s ease;
+    max-width: 600px;
+    margin: 0 auto 30px;
+  }
+  
+  .address-content {
+    padding: 40px;
+    text-align: center;
+  }
+  
+  .warning-icon {
+    font-size: 4rem;
+    color: #f44336;
+    margin-bottom: 20px;
+    display: block;
+  }
+  
+  .delete-message {
+    font-size: 1.2rem;
+    color: #444;
+    margin-bottom: 15px;
+  }
+  
+  .address-info {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 15px;
+    margin: 25px auto;
+    max-width: 450px;
+    text-align: left;
+  }
+  
+  .address-info-item {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .address-info-item:last-child {
+    margin-bottom: 0;
+  }
+  
+  .address-info-item i {
+    width: 30px;
+    color: #777;
+    font-size: 1.1rem;
+    margin-right: 10px;
+  }
+  
+  .address-info-label {
+    font-weight: 600;
+    color: #444;
+    margin-right: 10px;
+    min-width: 80px;
+  }
+  
+  .form-actions {
+    margin-top: 35px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+  
+  .btn-delete {
+    background: linear-gradient(to right, #f44336, #d32f2f);
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(244, 67, 54, 0.2);
+  }
+  
+  .btn-delete:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(244, 67, 54, 0.3);
+  }
+  
+  .btn-delete i {
+    margin-right: 8px;
+  }
+  
+  .btn-cancel {
+    background: #f5f5f5;
+    color: #555;
+    border: 1px solid #ddd;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+  }
+  
+  .btn-cancel:hover {
+    background: #eee;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
+  }
+  
+  .btn-cancel i {
+    margin-right: 8px;
+  }
+  
+  @media (max-width: 768px) {
+    .address-content {
+      padding: 30px 20px;
+    }
+    
+    .address-title {
+      font-size: 1.8rem;
+    }
+    
+    .form-actions {
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .btn-delete, .btn-cancel {
+      width: 100%;
+      max-width: 280px;
+    }
+  }
+</style>
+
+<div class="address-container">
+  <div class="address-header">
+    <h1 class="address-title">删除收货地址</h1>
+  </div>
+  
+  <div class="address-card">
+    <div class="address-content">
+      <i class="fas fa-exclamation-triangle warning-icon"></i>
+      <p class="delete-message">确定要删除这个收货地址吗？此操作不可恢复。</p>
+      
+      <div class="address-info">
+        <div class="address-info-item">
+          <i class="fas fa-user"></i>
+          <span class="address-info-label">收货人：</span>
+          <span>{{ address.receiver }}</span>
+        </div>
+        <div class="address-info-item">
+          <i class="fas fa-phone"></i>
+          <span class="address-info-label">电话：</span>
+          <span>{{ address.phone }}</span>
+        </div>
+        <div class="address-info-item">
+          <i class="fas fa-map-marker-alt"></i>
+          <span class="address-info-label">详细地址：</span>
+          <span>{{ address.detail }}</span>
+        </div>
+      </div>
+      
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-actions">
+          <button type="submit" class="btn-delete">
+            <i class="fas fa-trash"></i> 确认删除
+          </button>
+          <a href="{% url 'users:address_list' %}" class="btn-cancel">
+            <i class="fas fa-times"></i> 取消
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %} 
